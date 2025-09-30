@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -41,7 +40,7 @@ pipeline {
           steps {
                bat 'docker context use default' // Windows mein context set karna zaroori hai
 
-               withDockerRegistry([credentialsId: 'docker-hub-creds']) {
+               withDockerRegistry([credentialsId: 'dockerhubcredentialsd']) {
                bat 'docker push asfand348/hello-node-app:19'}
                                               
             }
