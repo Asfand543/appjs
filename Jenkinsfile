@@ -37,7 +37,7 @@ pipeline {
             steps {
                 script {
                     bat 'docker context use default'
-                    withDockerRegistry([credentialsId: 'dockerhubcredentials']) {
+                    withDockerRegistry([credentialsId: 'dockerhubcredentialsd']) {
                         // Push versioned tag
                         bat "docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}"
                         
