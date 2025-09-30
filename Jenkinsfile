@@ -31,11 +31,12 @@ pipeline {
             steps {
                 script {
                     docker.build("${DOCKER_IMAGE}:${BUILD_NUMBER}")
+                    bat 'docker context use default'
+
                 }
             }
         }
-        bat 'docker context use default'
-
+        
         stage('Push to Docker Hub') {
     steps {
         script {
