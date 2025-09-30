@@ -34,6 +34,7 @@ pipeline {
                 }
             }
         }
+        bat 'docker context use default'
 
         stage('Push to Docker Hub') {
     steps {
