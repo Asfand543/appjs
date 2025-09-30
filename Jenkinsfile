@@ -36,14 +36,18 @@ pipeline {
         }
 
         stage('Push to Docker Hub') {
-            steps {
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhubcredentialsd') {
-                        docker.image("${DOCKER_IMAGE}:${BUILD_NUMBER}").push()
-                    }
-                }
+    steps {
+        script {
+            withDockerRegistry([ credentialsId: 'dockerhubcredentialsd', url: '' ]) {
+                bat '''
+                    docker --context default login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+                    docker --context default push asfand348/hello-node-app:17
+                '''
             }
         }
+    }
+}
+
 
         stage('Deploy Container') {
             steps {
