@@ -2,15 +2,15 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "asfand348/hello-node-app"
-    }
+          DOCKER_IMAGE = "asfand348/hello-node-app"
+       }
 
     stages {
-        stage('Clone Repository') {
-    steps {
-        git branch: 'main', url: 'https://github.com/Asfand543/appjs.git'
-    }
-}
+         stage('Clone Repository') {
+           steps {
+           git branch: 'main', url: 'https://github.com/Asfand543/appjs.git'
+           }
+        }
 
 
         stage('Install Dependencies') {
@@ -45,7 +45,7 @@ pipeline {
                                               
             }
         }
-}
+
 
 
         stage('Deploy Container') {
@@ -59,8 +59,8 @@ pipeline {
                 }
             }
         }
+    
     }
-
     post {
         success {
             echo "✅ Deployment successful!"
