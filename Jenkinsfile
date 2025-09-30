@@ -38,16 +38,14 @@ pipeline {
         }
         
         stage('Push to Docker Hub') {
-    steps {
-        script {
-            withDockerRegistry([ credentialsId: 'dockerhubcredentialsd', url: '' ]) {
-                bat '''
-                    docker --context default login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-                    docker --context default push asfand348/hello-node-app:17
-                '''
+          steps {
+               bat 'docker context use default' // Windows mein context set karna zaroori hai
+
+               withDockerRegistry([credentialsId: 'docker-hub-creds']) {
+               bat 'docker push asfand348/hello-node-app:19'}
+                                              
             }
         }
-    }
 }
 
 
