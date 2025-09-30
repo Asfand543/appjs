@@ -2,16 +2,15 @@ pipeline {
     agent any
 
     environment {
-          DOCKER_IMAGE = "asfand348/hello-node-app"
-       }
+        DOCKER_IMAGE = "asfand348/hello-node-app"
+    }
 
     stages {
-         stage('Clone Repository') {
-           steps {
-           git branch: 'main', url: 'https://github.com/Asfand543/appjs.git'
-           }
+        stage('Clone Repository') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Asfand543/appjs.git'
+            }
         }
-
 
         stage('Install Dependencies') {
             steps {
@@ -21,7 +20,6 @@ pipeline {
 
         stage('Test') {
             steps {
-                // If you don’t have tests, you can skip or keep a dummy one
                 bat 'npm test || echo "No tests to run"'
             }
         }
@@ -29,38 +27,41 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
+                    bat 'docker context use default'  // Ensure Docker is using default context
                     docker.build("${DOCKER_IMAGE}:${BUILD_NUMBER}")
-                    bat 'docker context use default'
-
                 }
             }
         }
         
         stage('Push to Docker Hub') {
-          steps {
-               bat 'docker context use default' // Windows mein context set karna zaroori hai
-
-               withDockerRegistry([credentialsId: 'dockerhubcredentialsd']) {
-               bat 'docker push asfand348/hello-node-app:19'}
-                                              
+            steps {
+                script {
+                    bat 'docker context use default'
+                    withDockerRegistry([credentialsId: 'dockerhubcredentials']) {
+                        // Push versioned image
+                        bat "docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}"
+                        
+                        // Tag as latest and push
+                        bat "docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest"
+                        bat "docker push ${DOCKER_IMAGE}:latest"
+                    }
+                }
             }
         }
-
-
 
         stage('Deploy Container') {
             steps {
                 script {
-                    bat '''
-                    docker stop hello-node-app || true
-                    docker rm hello-node-app || true
+                    bat """
+                    docker stop hello-node-app || exit 0
+                    docker rm hello-node-app || exit 0
                     docker run -d -p 3000:3000 --name hello-node-app ${DOCKER_IMAGE}:${BUILD_NUMBER}
-                    '''
+                    """
                 }
             }
         }
-    
     }
+
     post {
         success {
             echo "✅ Deployment successful!"
