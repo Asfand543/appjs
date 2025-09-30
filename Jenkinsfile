@@ -8,10 +8,11 @@ pipeline {
 
     stages {
         stage('Clone Repository') {
-            steps {
-                git 'https://github.com/Asfand543/appjs.git'
-            }
-        }
+    steps {
+        git branch: 'main', url: 'https://github.com/Asfand543/appjs.git'
+    }
+}
+
 
         stage('Install Dependencies') {
             steps {
