@@ -94,20 +94,20 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/your-username/hello-node-app.git'
+                git 'https://github.com/Asfand543/appjs.git'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
         stage('Test') {
             steps {
                 // If you don’t have tests, you can skip or keep a dummy one
-                sh 'npm test || echo "No tests to run"'
+                bat 'npm test || echo "No tests to run"'
             }
         }
 
@@ -132,7 +132,7 @@ pipeline {
         stage('Deploy Container') {
             steps {
                 script {
-                    sh '''
+                    bat '''
                     docker stop hello-node-app || true
                     docker rm hello-node-app || true
                     docker run -d -p 3000:3000 --name hello-node-app ${DOCKER_IMAGE}:${BUILD_NUMBER}
