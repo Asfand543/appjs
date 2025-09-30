@@ -3,7 +3,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "your-dockerhub-username/hello-node-app"
+        DOCKER_IMAGE = "asfand348/hello-node-app"
     }
 
     stages {
