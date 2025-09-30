@@ -18,9 +18,9 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Run Tests') {
             steps {
-                bat 'npm test || echo No tests to run'
+                bat 'npm test'
             }
         }
 
@@ -33,16 +33,17 @@ pipeline {
             }
         }
 
-        stage('Push to Docker Hub') {
+        stage('Push Docker Image') {
             steps {
                 script {
                     bat 'docker context use default'
                     withDockerRegistry([credentialsId: 'dockerhubcredentials']) {
-                        // Push versioned image
+                        // Push versioned tag
                         bat "docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}"
-
                         
-                        
+                        // Tag and push latest
+                        bat "docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest"
+                        bat "docker push ${DOCKER_IMAGE}:latest"
                     }
                 }
             }
@@ -52,9 +53,9 @@ pipeline {
             steps {
                 script {
                     bat """
-                    docker stop hello-node-app 
-                    docker rm hello-node-app 
-                    docker run -d -p 3000:3000 --name hello-node-app ${DOCKER_IMAGE}
+                    docker stop hello-node-app || exit 0
+                    docker rm hello-node-app || exit 0
+                    docker run -d -p 3000:3000 --name hello-node-app ${DOCKER_IMAGE}:latest
                     """
                 }
             }
@@ -63,7 +64,7 @@ pipeline {
 
     post {
         success {
-            echo "✅ Deployment successful!"
+            echo "✅ Deployment successful! Visit http://localhost:3000"
         }
         failure {
             echo "❌ Pipeline failed!"
