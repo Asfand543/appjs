@@ -20,19 +20,19 @@ pipeline {
 
         stage('Test') {
             steps {
-                bat 'npm test || echo "No tests to run"'
+                bat 'npm test || echo No tests to run'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    bat 'docker context use default'  // Ensure Docker is using default context
-                    docker.build("${DOCKER_IMAGE}:${BUILD_NUMBER}")
+                    bat 'docker context use default'
+                    bat "docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} ."
                 }
             }
         }
-        
+
         stage('Push to Docker Hub') {
             steps {
                 script {
@@ -40,7 +40,7 @@ pipeline {
                     withDockerRegistry([credentialsId: 'dockerhubcredentials']) {
                         // Push versioned image
                         bat "docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}"
-                        
+
                         // Tag as latest and push
                         bat "docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest"
                         bat "docker push ${DOCKER_IMAGE}:latest"
@@ -55,7 +55,7 @@ pipeline {
                     bat """
                     docker stop hello-node-app || exit 0
                     docker rm hello-node-app || exit 0
-                    docker run -d -p 3000:3000 --name hello-node-app ${DOCKER_IMAGE}:${BUILD_NUMBER}
+                    docker run -d -p 3000:3000 --name hello-node-app ${DOCKER_IMAGE}:latest
                     """
                 }
             }
